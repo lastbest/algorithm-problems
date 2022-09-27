@@ -1,28 +1,43 @@
-package _0413;
+package _0330;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main_9205_김준우 {
 	static int n;
-	static int[][] loc, a;
+	static int[][] loc;
+	static boolean[] visited;
+	static boolean happy;
 	
-	public static void floydWarshall() {
-		int N = n+2;
-		// k = 거쳐가는 노드
-		for(int k = 0; k < N; k++) {
-			// i = 출발 노드
-			for(int i = 0; i < N; i++) {
-				// j = 도착 노드 
-				for(int j = 0; j < N; j++) {
-					if(a[i][k] == 1 && a[k][j] == 1) {
-						a[i][j] = 1;
-					}
+	public static void bfs(int k) {
+		Queue<Integer> q = new LinkedList<Integer>();
+		q.offer(k);
+		visited[k] = true;
+		
+		int level = 0;
+		
+		while(!q.isEmpty()) {
+			int x = q.poll();
+			System.out.println(level + " : " + x);
+			
+			if(level == n && getDist(x, n+1) <= 1000) {
+				happy = true;
+				return;
+			}
+			
+			for (int i = 1; i <= n; i++) {
+				if(getDist(x,i) <= 1000 && !visited[i]) {
+					q.offer(i);
+					//visited[i] = true;
 				}
 			}
+			level++;
 		}
+		
 	}
 	
 	public static int getDist(int a, int b) {
@@ -39,7 +54,8 @@ public class Main_9205_김준우 {
 		for(int t = 1;t<=T;t++) {
 			n = Integer.parseInt(br.readLine());
 			loc = new int[n+2][2];
-			a = new int[n+2][n+2];
+			visited = new boolean[n+2];
+			happy = false;
 			
 			for(int i = 0;i<n+2;i++) {
 				st = new StringTokenizer(br.readLine());
@@ -47,18 +63,14 @@ public class Main_9205_김준우 {
 				loc[i][1] = Integer.parseInt(st.nextToken());
 			}
 			
-			for(int i = 0; i<n+2; i++) {
-				for (int j = 0; j < n+2; j++) {
-					if(getDist(i, j)<=1000 && i != j) {
-						a[i][j] = 1;
-					}
-				}
+			bfs(0);
+			
+			if(happy) {
+				sb.append("happy\n");
 			}
-			
-			floydWarshall();
-			
-			if(a[0][n+1] == 1)sb.append("happy\n");
-			else sb.append("sad\n");
+			else {
+				sb.append("sad\n");
+			}
 		}
 		
 		System.out.println(sb);
